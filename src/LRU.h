@@ -5,8 +5,6 @@
 #ifndef PROJECT_LRU_H
 #define PROJECT_LRU_H
 
-#include <iostream>
-
 class LRU {
 public:
     typedef struct LRUNode{
@@ -27,7 +25,6 @@ public:
     LRUNode *GetHead();
     int DeleteFid(int frame_id);
     int DeleteHead();
-    void Print();
 private:
     LRUNode *head, *rear;
 

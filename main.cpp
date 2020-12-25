@@ -21,7 +21,7 @@ int main(){
     bMgr->lru->InsertRear(3, 3, 0)
     bMgr->lru->InsertRear(4, 4, 0)
 */
-    ifstream dataFile("..//Dataset//data-5w-50w-zipf.txt");
+    ifstream dataFile("Dataset\\data-5w-50w-zipf.txt");
     if(!dataFile){
         cerr << "open data-5w-50w-zipf.txt error" << endl;
         exit(1);
@@ -29,7 +29,7 @@ int main(){
     while(dataFile >> IOFlag >> c >> page_id){
         nums++;
         //cout << nums << " " << IOFlag << " " << page_id << " " << endl;
-        if (nums == 1305 || nums == 501){
+        if (nums % 1000 == 0){
             cout << nums << " " << page_id << " " << bMgr->FindPage(12351) << endl;
             //cout << 1 << endl;
             //cout << nums << endl;

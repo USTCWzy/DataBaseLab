@@ -21,10 +21,7 @@ LRU::InsertRear(int page_id, int frame_id, bool moveFlag) {
             while ( headPtr->next != nullptr && headPtr->next->page_id != page_id){
                 headPtr = headPtr->next;
             }
-            if (headPtr->next == nullptr){
-                Print();
-            }
-            else if (headPtr->next->page_id == page_id){
+            if (headPtr->next->page_id == page_id){
                 if (headPtr->next != rear) {
                     secPtr = headPtr->next;
                     headPtr->next = secPtr->next;
@@ -82,8 +79,9 @@ LRU::DeleteFid(int frame_id) {
         while(Ptr->next != nullptr && Ptr->next->frame_id != frame_id){
             Ptr = Ptr->next;
         }
-        if (Ptr->next == nullptr){
-            return 0;
+        if (Ptr->next == rear) {
+            rear = Ptr;
+            rear->next = nullptr;
         } else {
             sPtr = Ptr->next;
             int page_id = sPtr->page_id;
@@ -112,14 +110,4 @@ LRU::DeleteHead() {
         delete Ptr;
         return page_id;
     }
-}
-
-void
-LRU::Print() {
-    LRUNode *Ptr = head;
-    while(Ptr != rear){
-        std::cout << Ptr->page_id << std::endl;
-        Ptr = Ptr->next;
-    }
-    std::cout << rear->page_id << std::endl;
 }
