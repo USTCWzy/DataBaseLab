@@ -46,6 +46,8 @@ BMgr::FixPage(int page_id, int prot) {
             new_frame_id = SelectVictim();
         } else{
             new_frame_id = frame_id;
+            if (numPages > 0)
+                numPages--;
         }
 
         buf[new_frame_id] = DataFile->ReadPage(page_id);
@@ -53,8 +55,6 @@ BMgr::FixPage(int page_id, int prot) {
         BCB *bNode = new BCB(page_id, new_frame_id, 0, 0, 0);
         ptof[frame_id] = bNode;
         lru->InsertRear(page_id, new_frame_id, 0);
-        if (numPages > 0)
-            numPages--;
         return new_frame_id;
 
     }
@@ -62,20 +62,30 @@ BMgr::FixPage(int page_id, int prot) {
         while(bPtr->next != nullptr && bPtr->page_id != page_id){
             bPtr = bPtr->next;
         }
-        if (bPtr->next == nullptr && bPtr->page_id != page_id){
-            frame_id = SelectVictim();
-            buf[frame_id] = DataFile->ReadPage(page_id);
-            ftop[frame_id] = page_id;
-            BCB *bNode = new BCB(page_id, frame_id, 0, 0, 0);
-            bPtr->next = bNode;
-            lru->InsertRear(page_id, frame_id, 0);
-            return frame_id;
-        }
-        else{
+        if (bPtr->page_id == page_id){
             lru->InsertRear(page_id, bPtr->frame_id, 1);
             //bPtr->latch = 1;
             //bPtr->count++;
             return bPtr->frame_id;
+        } else if (bPtr->next == nullptr && bPtr->page_id != page_id){
+            new_frame_id = SelectVictim();
+            buf[new_frame_id] = DataFile->ReadPage(page_id);
+            ftop[new_frame_id] = page_id;
+            BCB *bNode = new BCB(page_id, new_frame_id, 0, 0, 0);
+            lru->InsertRear(page_id, new_frame_id, 0);
+
+            bPtr = ptof[frame_id];
+            if (bPtr == nullptr){
+                ptof[frame_id] = bNode;
+            }
+            else{
+                while(bPtr->next != nullptr){
+                    bPtr = bPtr->next;
+                }
+                bPtr->next = bNode;
+            }
+
+            return new_frame_id;
         }
     }
 }
@@ -197,7 +207,7 @@ BMgr::RemoveBCB(BCB *ptr, int page_id) {
             bPtr = bPtr->next;
         }
         if (bPtr->next == ptr){
-            bPtr->next = ptr->next;
+            bPtr->next = bPtr->next->next;
             delete ptr;
         }
     }
