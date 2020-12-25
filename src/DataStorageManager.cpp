@@ -6,7 +6,7 @@
 
 
 DSMgr::DSMgr() {
-    FILE *fp = fopen("DataSet\\data.dbf", "r");
+    FILE *fp = fopen("..//DataSet//data.dbf", "rb");
     if (!fp){
         InitializeRandom();
     }else{
@@ -17,6 +17,7 @@ DSMgr::DSMgr() {
     numPages = 0;
     for (int i = 0; i < MAXPAGES; i++){
         pages[i] = 0;
+        index[i] = i;
     }
 }
 
@@ -26,7 +27,7 @@ DSMgr::~DSMgr() {
 
 int
 DSMgr::OpenFile(std::string filename) {
-    if((currFile = fopen(filename.data(), "r")) == nullptr){
+    if((currFile = fopen(filename.data(), "rb")) == nullptr){
         return -1;
     }
     return 0;
@@ -39,13 +40,23 @@ DSMgr::InitializeRandom() {
     std::uniform_int_distribution<std::mt19937::result_type> dist(0, 9);
 
 
-    FILE *fp = fopen("DataSet\\data.dbf", "w");
+    FILE *fp = fopen("..//DataSet//data.dbf", "wb");
     if (!fp){
         std::cerr << "open data.dbf error!" << std::endl;
         exit(1);
     }
 
     bFrame *data = new bFrame();
+    int addr[1024] = {0};
+
+    for (int i = 0; i < 49; i++){
+        addr[0] = (i + 1);
+        for (int j = 0; j < 1023; j++){
+            addr[j + 1] = 49 + j + i * 1023;
+        }
+        fwrite(addr, sizeof(int), 1024, fp);
+    }
+
     for (int i = 0; i < 50000; i++){
         char initRandom = dist(rng) + '0';
         memset(data->field, initRandom, FRAMESIZE);
@@ -65,7 +76,14 @@ bFrame
 DSMgr::ReadPage(int page_id) {
     bFrame page;
     char data[FRAMESIZE];
-    Seek(FRAMESIZE * page_id, 0);
+
+    int pageAddr = 0, dicAddr = 0;
+    page_id = index[page_id];
+    dicAddr = page_id / 1023 * 1024 + page_id % 1023 + 1;
+    Seek(dicAddr * sizeof(int), 0);
+    fread(&pageAddr, sizeof(int), 1, currFile);
+    Seek(pageAddr * FRAMESIZE, 0);
+
     fread(data, sizeof(char), FRAMESIZE, currFile);
     for (int i = 0; i < FRAMESIZE; i++){
         page.field[i] = data[i];
@@ -75,7 +93,12 @@ DSMgr::ReadPage(int page_id) {
 
 int
 DSMgr::WritePage(int frame_id, bFrame frm) {
-    Seek(FRAMESIZE * frame_id, 0);
+    int pageAddr, dicAddr = 0;
+    frame_id = index[frame_id];
+    dicAddr = frame_id / 1023 * 1024 + frame_id % 1023 + 1;
+    Seek(dicAddr * sizeof(int), 0);
+    fread(&pageAddr, sizeof(int), 1, currFile);
+    Seek(pageAddr * FRAMESIZE, 0);
     return fwrite(frm.field, sizeof (char), FRAMESIZE, currFile);
 }
 

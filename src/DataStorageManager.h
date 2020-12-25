@@ -29,10 +29,12 @@ public:
     int GetNumPages();
     void SetUse(int index, int use_bit);
     int GetUse(int index);
+
 private:
     FILE *currFile;
     int numPages;
     int pages[MAXPAGES];
+    int index[MAXPAGES];
 };
 
 
