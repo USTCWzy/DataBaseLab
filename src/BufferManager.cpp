@@ -13,8 +13,12 @@ BMgr::BMgr() {
         ptof[i] = nullptr;
     }
 
+    for (int i = 0; i < 50000; i++){
+        Monitor[i] = 0;
+    }
+
     DataFile = new DSMgr();
-    DataFile->OpenFile("DataSet//data.dbf");
+    DataFile->OpenFile("..//DataSet//data.dbf");
 
     lru = new LRU();
 
@@ -42,9 +46,12 @@ BMgr::FixPage(int page_id, int prot) {
     if (bPtr == nullptr ){
         if (ftop[frame_id] != -1) {
             new_frame_id = SelectVictim();
+            if (new_frame_id == 646)
+                std::cout << page_id << std::endl;
         } else{
             new_frame_id = frame_id;
         }
+
         buf[new_frame_id] = DataFile->ReadPage(page_id);
         ftop[new_frame_id] = page_id;
         BCB *bNode = new BCB(page_id, new_frame_id, 0, 0, 0);
@@ -61,6 +68,8 @@ BMgr::FixPage(int page_id, int prot) {
         }
         if (bPtr->next == nullptr && bPtr->page_id != page_id){
             frame_id = SelectVictim();
+            if (frame_id == 646)
+                std::cout << page_id << std::endl;
             buf[frame_id] = DataFile->ReadPage(page_id);
             ftop[frame_id] = page_id;
             BCB *bNode = new BCB(page_id, frame_id, 0, 0, 0);
@@ -139,7 +148,14 @@ BMgr::SelectVictim() {
                     data_frame_id = bPtr->frame_id;
 
                     RemoveLRUEle(data_frame_id);
+                    if (bPtr->page_id == 17){
+                        std::cout << 17 << std::endl;
+                    }
                     RemoveBCB(bPtr, bPtr->page_id);
+
+                    if (bPtr->page_id == 1){
+                        std::cout << lru->GetHead()->page_id << std::endl;
+                    }
 
                     return data_frame_id;
                 }
@@ -171,6 +187,11 @@ BMgr::FindPage(int page_id) {
     }else{
         return -1;
     }
+}
+
+void
+BMgr::UpdateLRU(int page_id, int frame_id) {
+    lru->InsertRear(page_id, frame_id, true);
 }
 
 void

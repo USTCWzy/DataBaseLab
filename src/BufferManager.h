@@ -26,6 +26,7 @@ public:
     int SelectVictim();
     int Hash(int page_id);
     int FindPage(int page_id);
+    void UpdateLRU(int page_id, int frame_id);
     void RemoveBCB(BCB * ptr, int page_id);
     void RemoveLRUEle(int frid);
     void SetDirty(int frame_id);
@@ -36,6 +37,8 @@ public:
     bFrame buf[DEFBUFSIZE];
     DSMgr *DataFile;
     LRU *lru;
+
+    int Monitor[50000];
 private:
 // Hash Table
     int ftop[DEFBUFSIZE];

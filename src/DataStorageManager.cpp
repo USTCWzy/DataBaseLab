@@ -6,7 +6,7 @@
 
 
 DSMgr::DSMgr() {
-    FILE *fp = fopen("DataSet//data.dbf", "r");
+    FILE *fp = fopen("..//DataSet//data.dbf", "r");
     if (!fp){
         InitializeRandom();
     }else{
@@ -39,7 +39,7 @@ DSMgr::InitializeRandom() {
     std::uniform_int_distribution<std::mt19937::result_type> dist(0, 9);
 
 
-    FILE *fp = fopen("DataSet//data.dbf", "w");
+    FILE *fp = fopen("..//DataSet//data.dbf", "w");
     if (!fp){
         std::cerr << "open data.dbf error!" << std::endl;
         exit(1);

@@ -12,21 +12,26 @@ LRU::LRU() {
 void
 LRU::InsertRear(int page_id, int frame_id, bool moveFlag) {
     if (moveFlag){
-        LRUNode *headPtr = head, *secPtr = head->next;
+        LRUNode *headPtr = head, *secPtr;
         if (headPtr->page_id == page_id){
             DeleteHead();
             InsertRear(page_id, frame_id, false);
         }
         else{
-            while(secPtr != nullptr && secPtr->page_id != page_id){
-                headPtr = secPtr;
-                secPtr = secPtr->next;
+            while ( headPtr->next != nullptr && headPtr->next->page_id != page_id){
+                headPtr = headPtr->next;
             }
-            if (secPtr->page_id == page_id){
-                headPtr->next = secPtr->next;
-                rear->next = secPtr;
-                rear = rear->next;
-                secPtr->next = nullptr;
+            if (headPtr->next == nullptr){
+                Print();
+            }
+            else if (headPtr->next->page_id == page_id){
+                if (headPtr->next != rear) {
+                    secPtr = headPtr->next;
+                    headPtr->next = secPtr->next;
+                    rear->next = secPtr;
+                    rear = secPtr;
+                    secPtr->next = nullptr;
+                }
             }
         }
     }
@@ -73,16 +78,14 @@ LRU::DeleteFid(int frame_id) {
         return page_id;
     }
     else{
-        LRUNode *Ptr = head;
-        LRUNode *sPtr = head->next;
-        while(sPtr != nullptr && sPtr->frame_id != frame_id){
-            sPtr = sPtr->next;
+        LRUNode *Ptr = head, *sPtr;
+        while(Ptr->next != nullptr && Ptr->next->frame_id != frame_id){
             Ptr = Ptr->next;
         }
-        if (sPtr == nullptr){
+        if (Ptr->next == nullptr){
             return 0;
-        }
-        else if (sPtr->frame_id == frame_id){
+        } else {
+            sPtr = Ptr->next;
             int page_id = sPtr->page_id;
             Ptr->next = Ptr->next->next;
             delete sPtr;
@@ -109,4 +112,14 @@ LRU::DeleteHead() {
         delete Ptr;
         return page_id;
     }
+}
+
+void
+LRU::Print() {
+    LRUNode *Ptr = head;
+    while(Ptr != rear){
+        std::cout << Ptr->page_id << std::endl;
+        Ptr = Ptr->next;
+    }
+    std::cout << rear->page_id << std::endl;
 }
