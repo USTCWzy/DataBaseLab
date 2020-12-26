@@ -16,7 +16,7 @@ BMgr::BMgr() {
     }
 
     DataFile = new DSMgr();
-    DataFile->OpenFile("..//DataSet//data.dbf");
+    DataFile->OpenFile("DataSet\\data.dbf");
 
     lru = new LRU();
 

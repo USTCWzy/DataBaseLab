@@ -44,7 +44,7 @@ int main(){
     QueryPerformanceFrequency(&num);
     freq = num.QuadPart;
 
-    ifstream dataFile("..//Dataset//data-5w-50w-zipf.txt");
+    ifstream dataFile("Dataset\\data-5w-50w-zipf.txt");
     if(!dataFile){
         cerr << "open data-5w-50w-zipf.txt error" << endl;
         exit(1);

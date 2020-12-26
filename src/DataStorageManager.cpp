@@ -6,7 +6,7 @@
 
 
 DSMgr::DSMgr() {
-    FILE *fp = fopen("..//DataSet//data.dbf", "rb");
+    FILE *fp = fopen("DataSet\\data.dbf", "rb");
     if (!fp){
         InitializeRandom();
     }else{
@@ -41,7 +41,7 @@ DSMgr::InitializeRandom() {
     std::uniform_int_distribution<std::mt19937::result_type> dist(0, 9);
 
 
-    FILE *fp = fopen("..//DataSet//data.dbf", "wb");
+    FILE *fp = fopen("DataSet\\data.dbf", "wb");
     if (!fp){
         std::cerr << "open data.dbf error!" << std::endl;
         exit(1);
@@ -123,11 +123,11 @@ DSMgr::GetNewPage() {
     }
     if (i == MAXPAGES){
         std::cout << "No extra pages!" << std::endl;
-        return -1
+        return -1;
     }
     if (j == MAXPAGES){
         std::cout << "No extra blocks!" << std::endl;
-        return -1
+        return -1;
     }
     index[j] = i;
     blocks[j] = 1;
