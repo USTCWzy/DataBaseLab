@@ -16,8 +16,9 @@ DSMgr::DSMgr() {
     currFile = nullptr;
     numPages = 0;
     for (int i = 0; i < MAXPAGES; i++){
-        pages[i] = 0;
+        pages[i] = 1;
         index[i] = i;
+        blocks[i] = 1;
     }
 }
 
@@ -109,12 +110,29 @@ DSMgr::Seek(int offset, int pos) {
 
 int
 DSMgr::GetNewPage() {
-    for (int i = 0; i < MAXPAGES; i++){
+    int i, j;
+    for (i = 0; i < MAXPAGES; i++){
         if (!pages[i]){
-            return i;
+            break;
         }
     }
-    return 0;
+    for (j = 0; j < MAXPAGES; j++){
+        if (!blocks[j]){
+            break;
+        }
+    }
+    if (i == MAXPAGES){
+        std::cout << "No extra pages!" << std::endl;
+        return -1
+    }
+    if (j == MAXPAGES){
+        std::cout << "No extra blocks!" << std::endl;
+        return -1
+    }
+    index[j] = i;
+    blocks[j] = 1;
+    pages[i] = 1;
+    return j;
 }
 
 FILE

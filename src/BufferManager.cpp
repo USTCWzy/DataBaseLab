@@ -268,6 +268,7 @@ BMgr::PrintFrame(int frame_id) {
     for (int i = 0; i < FRAMESIZE; i++){
         putchar(buf[frame_id].field[i]);
     }
+    putchar('\n');
 }
 
 

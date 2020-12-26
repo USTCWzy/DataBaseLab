@@ -35,6 +35,7 @@ private:
     int numPages;
     int pages[MAXPAGES];
     int index[MAXPAGES];
+    int blocks[MAXPAGES];
 };
 
 
